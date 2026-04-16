@@ -382,11 +382,65 @@ function buildPrintPage() {
 }
 function printQuote() {
   buildPrintPage();
-  // Xóa URL khỏi history để Safari không hiển thị URL ở chân trang
-  if (window.history.replaceState) {
-    window.history.replaceState(null, ' ', ' ');
+  // Dùng iframe about:blank để Safari iPhone không hiển thị URL/title khi in
+  const printContent = document.getElementById('printPage').outerHTML;
+  const printStyles = document.querySelector('style').textContent;
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.top = '-9999px';
+  iframe.style.left = '-9999px';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title> </title><style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Times New Roman', Times, serif; color: #000; padding: 0; margin: 0; }
+    @page { size: A4; margin: 15mm; }
+    .print-page { display: block; font-family: 'Times New Roman', Times, serif; color: #000; }
+    .print-page .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .print-page .p-header-left { flex: 1; }
+    .print-page .p-company { font-size: 11.5pt; font-weight: bold; margin-top: 4px; white-space: nowrap; }
+    .print-page .p-addr { font-size: 10pt; font-style: italic; margin-top: 3px; }
+    .print-page .p-mst { font-size: 10pt; margin-top: 2px; }
+    .print-page .p-logo-img { height: 50px; }
+    .print-page .p-title { text-align: center; font-size: 18pt; font-weight: bold; margin: 12px 0 2px; }
+    .print-page .p-date { text-align: center; font-size: 11pt; margin-bottom: 8px; }
+    .print-page .p-customer { font-size: 11pt; font-weight: bold; margin-bottom: 6px; }
+    .print-page table.p-table { width: 100%; border-collapse: collapse; font-size: 11pt; }
+    .print-page table.p-table th, .print-page table.p-table td { border: 1px solid #000; padding: 5px 8px; }
+    .print-page table.p-table thead th { background: #d6e4d6; font-weight: bold; text-align: center; vertical-align: middle; }
+    .print-page .t-stt { width: 30px; text-align: center; }
+    .print-page .t-dvt { width: 50px; text-align: center; }
+    .print-page .t-qty { width: 60px; text-align: center; }
+    .print-page .t-price { width: 100px; text-align: right; }
+    .print-page .t-total { width: 120px; text-align: right; }
+    .print-page .row-total td { font-weight: bold; }
+    .print-page .p-words { font-size: 11pt; font-weight: bold; margin-top: 4px; font-style: italic; }
+    .print-page .p-note { font-size: 10pt; margin-top: 10px; line-height: 1.7; }
+    .print-page .p-note b { font-size: 11pt; }
+    .print-page .p-note .note-line { margin-left: 0; }
+    .print-page .p-note .note-indent { margin-left: 16px; }
+    .print-page .p-sign { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; font-size: 11pt; }
+    .print-page .p-sign-col { width: 45%; }
+    .print-page .p-sign-title { font-weight: bold; }
+    .print-page .p-sign-sub { font-style: italic; font-size: 10pt; color: #555; }
+  </style></head><body>${printContent}</body></html>`);
+  doc.close();
+  // Đợi logo tải xong rồi in
+  const logoImg = doc.querySelector('.p-logo-img');
+  function doPrint() {
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
   }
-  window.print();
+  if (logoImg && !logoImg.complete) {
+    logoImg.onload = doPrint;
+    logoImg.onerror = doPrint;
+  } else {
+    setTimeout(doPrint, 300);
+  }
 }
 
 // ===== GỬI ZALO =====
