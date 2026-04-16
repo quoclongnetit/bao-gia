@@ -128,8 +128,13 @@
     <div class="edit-header header-info">Thông tin báo giá</div>
     <div class="edit-body">
       <div class="input-group">
+        <label>Số báo giá:</label>
+        <input type="text" id="quoteNumber" placeholder="BG-260416-001" style="width:200px;">
+        <button onclick="autoQuoteNumber()" style="margin-left:8px;padding:6px 14px;border:none;border-radius:6px;background:#2e7d32;color:#fff;cursor:pointer;font-size:0.9em;font-weight:600;">Tự động</button>
+      </div>
+      <div class="input-group">
         <label>Ngày báo giá:</label>
-        <input type="date" id="quoteDate">
+        <input type="date" id="quoteDate" onchange="autoQuoteNumber()">
       </div>
       <div class="input-group">
         <label>Kính gửi (Tên công ty):</label>
@@ -220,6 +225,7 @@
 
     <div class="p-title">BẢNG CHÀO GIÁ</div>
     <div class="p-date" id="pDate">Ngày báo giá: 16/04/2026</div>
+    <div id="pQuoteNumber" style="text-align:center;font-size:11pt;margin-bottom:8px;"></div>
     <div class="p-customer" id="pCustomer">Kính gửi:</div>
     <div class="p-address" id="pAddress" style="font-size:11pt;margin-bottom:6px;"></div>
 
@@ -335,9 +341,28 @@ function numToVi(n) {
   return r.charAt(0).toUpperCase()+r.slice(1)+' đồng.';
 }
 
+// Tự động tạo số báo giá: BG-YYMMDD-XXX
+function autoQuoteNumber() {
+  const dateVal = document.getElementById('quoteDate').value;
+  if (!dateVal) return;
+  const d = new Date(dateVal);
+  const yy = String(d.getFullYear()).slice(2);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const prefix = 'BG-' + yy + mm + dd;
+  // Đếm số thứ tự từ localStorage
+  const counterKey = 'minhdat_bg_counter_' + prefix;
+  let count = parseInt(localStorage.getItem(counterKey)) || 0;
+  count++;
+  localStorage.setItem(counterKey, count);
+  document.getElementById('quoteNumber').value = prefix + '-' + String(count).padStart(3, '0');
+  saveState();
+}
+
 // Lấy dữ liệu từ form
 function getFormData() {
   const dateVal = document.getElementById('quoteDate').value;
+  const quoteNumber = document.getElementById('quoteNumber').value || '';
   const customer = document.getElementById('customerName').value || '';
   const address = document.getElementById('customerAddress').value || '';
   const vatRate = parseInt(document.getElementById('vatRate').value);
@@ -360,13 +385,14 @@ function getFormData() {
   });
   const vatAmt = Math.round(subtotal * vatRate / 100);
   const grand = subtotal + vatAmt;
-  return { dateStr, customer, address, vatRate, note, items, subtotal, vatAmt, grand };
+  return { dateStr, quoteNumber, customer, address, vatRate, note, items, subtotal, vatAmt, grand };
 }
 
 // ===== IN / XUẤT PDF =====
 function buildPrintPage() {
   const d = getFormData();
   document.getElementById('pDate').textContent = 'Ngày báo giá: ' + d.dateStr;
+  document.getElementById('pQuoteNumber').textContent = d.quoteNumber ? 'Số: ' + d.quoteNumber : '';
   document.getElementById('pCustomer').textContent = 'Kính gửi: ' + d.customer;
   document.getElementById('pAddress').textContent = d.address ? 'Địa chỉ: ' + d.address : '';
   const pBody = document.getElementById('pBody');
@@ -464,6 +490,7 @@ function shareZalo() {
 
 function resetAll() {
   if (!confirm('Bạn có chắc muốn xóa tất cả và làm mới?')) return;
+  document.getElementById('quoteNumber').value = '';
   document.getElementById('customerName').value = '';
   document.getElementById('customerAddress').value = '';
   document.getElementById('quoteBody').innerHTML = '';
@@ -491,6 +518,7 @@ function saveState() {
   });
   localStorage.setItem('minhdat_quote', JSON.stringify({
     date: document.getElementById('quoteDate').value,
+    quoteNumber: document.getElementById('quoteNumber').value,
     customer: document.getElementById('customerName').value,
     address: document.getElementById('customerAddress').value,
     vatRate: document.getElementById('vatRate').value,
@@ -504,6 +532,7 @@ function loadState() {
   if (saved) {
     const s = JSON.parse(saved);
     document.getElementById('quoteDate').value = s.date || '';
+    document.getElementById('quoteNumber').value = s.quoteNumber || '';
     document.getElementById('customerName').value = s.customer || '';
     document.getElementById('customerAddress').value = s.address || '';
     document.getElementById('vatRate').value = s.vatRate || '8';
