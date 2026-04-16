@@ -68,11 +68,11 @@
   .print-page { display: none; font-family: 'Times New Roman', Times, serif; color: #000; }
 
   .print-page .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-  .print-page .p-header-left { flex: 1; }
+  .print-page .p-header-right { flex: 1; text-align: right; }
   .print-page .p-company { font-size: 11.5pt; font-weight: bold; margin-top: 4px; white-space: nowrap; }
   .print-page .p-addr { font-size: 10pt; font-style: italic; margin-top: 3px; }
   .print-page .p-mst { font-size: 10pt; margin-top: 2px; }
-  .print-page .p-logo-img { height: 50px; }
+  .print-page .p-logo-img { height: 50px; margin-right: 15px; }
 
   .print-page .p-title { text-align: center; font-size: 18pt; font-weight: bold; margin: 12px 0 2px; }
   .print-page .p-date { text-align: center; font-size: 11pt; margin-bottom: 8px; }
@@ -215,12 +215,12 @@
   <!-- ========== PHẦN IN - GIỐNG HỆT MẪU PDF ========== -->
   <div class="print-page" id="printPage">
     <div class="p-header">
-      <div class="p-header-left">
+      <img src="logo.png" class="p-logo-img" alt="Minh Đạt">
+      <div class="p-header-right">
         <div class="p-company">CÔNG TY CỔ PHẦN PHÁT TRIỂN CÔNG NGHỆ MINH ĐẠT</div>
         <div class="p-addr">Địa chỉ: Tầng 2, Số 79B phố Vũ Ngọc Phan, Phường Láng, Thành phố Hà Nội, Việt Nam</div>
         <div class="p-mst">MST: 0109938186</div>
       </div>
-      <img src="logo.png" class="p-logo-img" alt="Minh Đạt">
     </div>
 
     <div class="p-title">BẢNG CHÀO GIÁ</div>
