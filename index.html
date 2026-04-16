@@ -177,7 +177,7 @@
       <span id="subtotal" style="display:none;"></span>
       <span id="vatAmount" style="display:none;"></span>
       <div class="total-final">
-        <span class="label">TỔNG CỘNG (ĐÃ BAO GỒM VAT):</span>
+        <span class="label">TỔNG CỘNG:</span>
         <span class="value" id="grandTotal">0</span>
       </div>
       <div class="total-words" id="totalWords"></div>
@@ -233,7 +233,7 @@
       <tbody id="pBody"></tbody>
       <tfoot>
         <tr class="row-total">
-          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG (ĐÃ BAO GỒM VAT)</td>
+          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG</td>
           <td class="t-total" id="pGrandTotal"></td>
         </tr>
       </tfoot>
@@ -296,21 +296,16 @@ function onPriceFocus(el) { const r = parseNum(el.value); el.value = r === 0 ? '
 function onPriceBlur(el) { el.value = fmt(parseNum(el.value)); saveState(); }
 
 function calculate() {
-  let sub = 0;
+  let total = 0;
   document.querySelectorAll('#quoteBody tr').forEach(tr => {
     const q = parseInt(tr.querySelector('.col-qty input').value) || 0;
     const p = parseNum(tr.querySelector('.col-price input').value);
     const t = q * p;
     tr.querySelector('.col-total').textContent = fmt(t);
-    sub += t;
+    total += t;
   });
-  const vr = parseInt(document.getElementById('vatRate').value);
-  const va = Math.round(sub * vr / 100);
-  const gt = sub + va;
-  document.getElementById('subtotal').textContent = fmt(sub) + ' đ';
-  document.getElementById('vatAmount').textContent = fmt(va) + ' đ';
-  document.getElementById('grandTotal').textContent = fmt(gt) + ' đ';
-  document.getElementById('totalWords').textContent = 'Số tiền bằng chữ: ' + numToVi(gt);
+  document.getElementById('grandTotal').textContent = fmt(total) + ' đ';
+  document.getElementById('totalWords').textContent = 'Số tiền bằng chữ: ' + numToVi(total);
   saveState();
 }
 
@@ -355,7 +350,7 @@ function getFormData() {
   const quoteNumber = document.getElementById('quoteNumber').value || '';
   const customer = document.getElementById('customerName').value || '';
   const address = document.getElementById('customerAddress').value || '';
-  const vatRate = parseInt(document.getElementById('vatRate').value);
+  const vatRate = 0;
   const note = document.getElementById('noteArea').value;
   let dateStr = '';
   if (dateVal) {
@@ -373,9 +368,8 @@ function getFormData() {
     subtotal += total;
     items.push({ stt: i+1, name, dvt, qty, price, total });
   });
-  const vatAmt = Math.round(subtotal * vatRate / 100);
-  const grand = subtotal + vatAmt;
-  return { dateStr, quoteNumber, customer, address, vatRate, note, items, subtotal, vatAmt, grand };
+  const grand = subtotal;
+  return { dateStr, quoteNumber, customer, address, note, items, subtotal, grand };
 }
 
 // ===== IN / XUẤT PDF =====
@@ -392,7 +386,7 @@ function buildPrintPage() {
     tr.innerHTML = `<td class="t-stt">${item.stt}</td><td class="t-name">${item.name}</td><td class="t-dvt">${item.dvt}</td><td class="t-qty">${item.qty}</td><td class="t-price">${fmt(item.price)}</td><td class="t-total">${fmt(item.total)}</td>`;
     pBody.appendChild(tr);
   });
-  document.getElementById('pTotalLabel').textContent = 'TỔNG CỘNG (ĐÃ BAO GỒM VAT)';
+  document.getElementById('pTotalLabel').textContent = 'TỔNG CỘNG';
   document.getElementById('pGrandTotal').textContent = fmt(d.grand);
   document.getElementById('pWords').innerHTML = '<i>Số tiền bằng chữ: </i>' + numToVi(d.grand);
   // Ghi chú
