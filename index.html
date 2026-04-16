@@ -417,19 +417,19 @@ function buildPrintPage() {
 }
 function printQuote() {
   buildPrintPage();
-  // Hiện print-page để chụp
   const el = document.getElementById('printPage');
+  // Hiện ở cuối trang để html2canvas render đúng
   el.style.display = 'block';
-  el.style.width = '794px'; // A4 width in px at 96dpi
+  el.style.width = '794px';
   el.style.padding = '40px';
   el.style.background = '#fff';
-  el.style.position = 'fixed';
+  el.style.position = 'absolute';
+  el.style.left = '0';
   el.style.top = '0';
-  el.style.left = '-9999px';
+  el.style.zIndex = '9999';
 
   showToast('Đang tạo PDF...');
 
-  // Đợi logo tải xong
   const logo = el.querySelector('.p-logo-img');
   function doCapture() {
     html2canvas(el, {
@@ -437,31 +437,29 @@ function printQuote() {
       useCORS: true,
       backgroundColor: '#ffffff',
       width: 794,
-      windowWidth: 794
+      scrollX: 0,
+      scrollY: 0
     }).then(canvas => {
+      // Ẩn lại
       el.style.display = 'none';
       el.style.position = '';
-      el.style.top = '';
       el.style.left = '';
+      el.style.top = '';
+      el.style.zIndex = '';
       el.style.width = '';
       el.style.padding = '';
 
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageW = 210;
-      const pageH = 297;
       const margin = 15;
-      const contentW = pageW - margin * 2;
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-      const ratio = contentW / (imgW / 2); // scale=2
-      const contentH = (imgH / 2) * ratio;
+      const contentW = 210 - margin * 2;
+      const contentH = (canvas.height / canvas.width) * contentW;
 
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, contentH);
 
-      // Tạo tên file
       const customer = document.getElementById('customerName').value || 'Bao-gia';
-      const fileName = 'Bao_gia_' + customer.replace(/\s+/g, '_') + '.pdf';
+      const qn = document.getElementById('quoteNumber').value;
+      const fileName = (qn || 'Bao_gia_' + customer.replace(/\s+/g, '_')) + '.pdf';
       pdf.save(fileName);
       showToast('Đã tạo PDF: ' + fileName);
     }).catch(err => {
@@ -476,7 +474,7 @@ function printQuote() {
     logo.onload = doCapture;
     logo.onerror = doCapture;
   } else {
-    setTimeout(doCapture, 200);
+    setTimeout(doCapture, 300);
   }
 }
 
