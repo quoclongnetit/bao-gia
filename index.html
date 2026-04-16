@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Báo Giá Nhanh - Minh Đạt</title>
+<title> </title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
@@ -67,7 +67,7 @@
 
   .print-page .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
   .print-page .p-header-left { flex: 1; }
-  .print-page .p-company { font-size: 13pt; font-weight: bold; margin-top: 4px; }
+  .print-page .p-company { font-size: 11.5pt; font-weight: bold; margin-top: 4px; white-space: nowrap; }
   .print-page .p-addr { font-size: 10pt; font-style: italic; margin-top: 3px; }
   .print-page .p-mst { font-size: 10pt; margin-top: 2px; }
   .print-page .p-logo-img { height: 50px; }
@@ -382,11 +382,11 @@ function buildPrintPage() {
 }
 function printQuote() {
   buildPrintPage();
-  // Tạm ẩn title để trình duyệt không hiển thị ở đầu/chân trang khi in
-  const origTitle = document.title;
-  document.title = ' ';
+  // Xóa URL khỏi history để Safari không hiển thị URL ở chân trang
+  if (window.history.replaceState) {
+    window.history.replaceState(null, ' ', ' ');
+  }
   window.print();
-  setTimeout(() => { document.title = origTitle; }, 500);
 }
 
 // ===== GỬI ZALO =====
