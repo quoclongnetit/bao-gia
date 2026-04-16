@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Giá Nhanh - Minh Đạt</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* Header công ty */
+  .company-header { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px 24px; margin-bottom: 18px; border-top: 4px solid #2e7d32; }
+  .company-name { font-size: 1.3em; font-weight: bold; color: #2e7d32; }
+  .company-info { font-size: 0.85em; color: #666; margin-top: 4px; line-height: 1.6; }
+  .doc-title { text-align: center; font-size: 1.6em; font-weight: bold; color: #003366; margin: 16px 0 4px; }
+  .doc-date { text-align: center; font-size: 0.9em; color: #666; margin-bottom: 12px; }
+
+  /* Section chung */
+  .section { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 18px; overflow: hidden; }
+  .section-header { padding: 12px 20px; font-weight: bold; font-size: 1.05em; color: #003366; }
+  .section-body { padding: 0 20px 16px; }
+  .header-info { background: #d9e1f2; }
+  .header-table { background: #c6efce; }
+  .header-note { background: #ffd966; }
+  .header-action { background: #b4c6e7; }
+
+  /* Input group */
+  .input-group { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+  .input-group:last-child { border-bottom: none; }
+  .input-group label { flex: 1; font-size: 0.95em; }
+  .input-group input, .input-group select { width: 300px; padding: 8px 12px; border: 2px solid #d9e1f2; border-radius: 6px; font-size: 1em; color: #0000ff; font-weight: 600; transition: border-color 0.2s; }
+  .input-group input:focus, .input-group select:focus { outline: none; border-color: #4a90d9; box-shadow: 0 0 0 3px rgba(74,144,217,0.15); }
+
+  /* Bảng báo giá */
+  .quote-table { width: 100%; border-collapse: collapse; font-size: 0.92em; }
+  .quote-table thead th { background: #003366; color: #fff; padding: 10px 8px; text-align: center; font-weight: 600; white-space: nowrap; }
+  .quote-table tbody td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+  .quote-table tbody tr:hover { background: #f5f8ff; }
+  .quote-table .col-stt { width: 40px; text-align: center; }
+  .quote-table .col-name { min-width: 200px; }
+  .quote-table .col-name input { width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; font-size: 0.95em; }
+  .quote-table .col-dvt { width: 60px; text-align: center; }
+  .quote-table .col-dvt input { width: 60px; text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 6px 4px; font-size: 0.95em; }
+  .quote-table .col-qty { width: 70px; text-align: center; }
+  .quote-table .col-qty input { width: 65px; text-align: right; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; font-size: 0.95em; }
+  .quote-table .col-price { width: 130px; text-align: right; }
+  .quote-table .col-price input { width: 120px; text-align: right; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; font-size: 0.95em; }
+  .quote-table .col-total { width: 130px; text-align: right; font-weight: 600; color: #003366; font-variant-numeric: tabular-nums; }
+  .quote-table .col-action { width: 40px; text-align: center; }
+  .quote-table input:focus { outline: none; border-color: #4a90d9; box-shadow: 0 0 0 2px rgba(74,144,217,0.15); }
+
+  .btn-del { background: #ff4444; color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 1em; line-height: 1; }
+  .btn-del:hover { background: #cc0000; }
+
+  .btn-add-row { background: #2e7d32; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; font-size: 0.95em; font-weight: 600; margin-top: 10px; }
+  .btn-add-row:hover { background: #1b5e20; }
+
+  /* Tổng cộng */
+  .total-section { margin-top: 12px; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+  .total-row:last-child { border-bottom: none; }
+  .total-row .label { font-size: 0.95em; }
+  .total-row .value { font-size: 1.05em; font-weight: 600; color: #003366; font-variant-numeric: tabular-nums; }
+  .total-final { background: linear-gradient(135deg, #fff9c4, #fff176); border: 3px solid #f9a825; border-radius: 10px; padding: 16px 20px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .total-final .label { font-size: 1.15em; font-weight: bold; color: #333; }
+  .total-final .value { font-size: 1.5em; font-weight: bold; color: #cc0000; }
+  .total-words { font-size: 0.88em; color: #666; font-style: italic; margin-top: 6px; }
+
+  /* Ghi chú */
+  .note-text { font-size: 0.9em; line-height: 1.7; color: #555; }
+  .note-text textarea { width: 100%; min-height: 100px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 0.92em; font-family: Arial, sans-serif; resize: vertical; }
+
+  /* Buttons */
+  .btn-group { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .btn-print { background: #003366; color: #fff; }
+  .btn-print:hover { background: #002244; }
+  .btn-excel { background: #217346; color: #fff; }
+  .btn-excel:hover { background: #1a5c38; }
+  .btn-reset { background: #757575; color: #fff; }
+  .btn-reset:hover { background: #555; }
+  .btn-zalo { background: #0068ff; color: #fff; }
+  .btn-zalo:hover { background: #0054cc; }
+
+  /* Toast */
+  .btn-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 28px; border-radius: 8px; font-size: 0.95em; z-index: 999; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+  /* Print */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .no-print { display: none !important; }
+    .section { box-shadow: none; break-inside: avoid; }
+    .company-header { border-top: 3px solid #2e7d32; }
+    .quote-table input { border: none !important; padding: 0 !important; box-shadow: none !important; }
+    .total-final { border: 2px solid #333; background: #fff9c4 !important; }
+    .btn-group { display: none; }
+    .quote-table .col-action { display: none; }
+    .quote-table thead th:last-child { display: none; }
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 10px; }
+    .quote-table { font-size: 0.82em; }
+    .input-group { flex-wrap: wrap; }
+    .input-group input, .input-group select { width: 100%; margin-top: 4px; }
+    .total-final { flex-direction: column; text-align: center; gap: 8px; }
+    .btn-group { flex-direction: column; }
+    .btn { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header Công ty -->
+  <div class="company-header">
+    <div class="company-name">CÔNG TY CỔ PHẦN PHÁT TRIỂN CÔNG NGHỆ MINH ĐẠT</div>
+    <div class="company-info">
+      Địa chỉ: Tầng 2, Số 79B phố Vũ Ngọc Phan, Phường Láng, Thành phố Hà Nội, Việt Nam<br>
+      MST: 0109938186
+    </div>
+    <div class="doc-title">BẢNG CHÀO GIÁ</div>
+    <div class="doc-date">Ngày báo giá: <input type="date" id="quoteDate" style="border:1px solid #ddd;border-radius:4px;padding:4px 8px;font-size:0.95em;color:#0000ff;font-weight:600;"></div>
+  </div>
+
+  <!-- Thông tin khách hàng -->
+  <div class="section">
+    <div class="section-header header-info">Thông tin khách hàng</div>
+    <div class="section-body">
+      <div class="input-group">
+        <label>Kính gửi (Tên công ty / khách hàng):</label>
+        <input type="text" id="customerName" placeholder="VD: Công ty Vạn Đạt">
+      </div>
+      <div class="input-group">
+        <label>Địa chỉ:</label>
+        <input type="text" id="customerAddress" placeholder="Địa chỉ khách hàng">
+      </div>
+      <div class="input-group">
+        <label>Người liên hệ:</label>
+        <input type="text" id="contactPerson" placeholder="Họ tên người liên hệ">
+      </div>
+      <div class="input-group">
+        <label>Số điện thoại:</label>
+        <input type="text" id="contactPhone" placeholder="Số điện thoại">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bảng báo giá -->
+  <div class="section">
+    <div class="section-header header-table">Danh mục hàng hóa / dịch vụ</div>
+    <div class="section-body" style="padding:0; overflow-x:auto;">
+      <table class="quote-table" id="quoteTable">
+        <thead>
+          <tr>
+            <th class="col-stt">STT</th>
+            <th class="col-name">Danh mục dịch vụ</th>
+            <th class="col-dvt">ĐVT</th>
+            <th class="col-qty">SL</th>
+            <th class="col-price">Đơn giá (VNĐ)</th>
+            <th class="col-total">Thành tiền (VNĐ)</th>
+            <th class="col-action no-print">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="quoteBody"></tbody>
+      </table>
+      <div style="padding: 10px 20px;" class="no-print">
+        <button class="btn-add-row" onclick="addRow()">+ Thêm dòng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thuế & Tổng cộng -->
+  <div class="section">
+    <div class="section-header header-note">Tổng cộng</div>
+    <div class="section-body">
+      <div class="total-section">
+        <div class="total-row">
+          <span class="label">Tổng cộng trước thuế:</span>
+          <span class="value" id="subtotal">0</span>
+        </div>
+        <div class="total-row">
+          <span class="label">
+            Thuế VAT:
+            <select id="vatRate" onchange="calculate()" style="border:1px solid #ddd;border-radius:4px;padding:4px 8px;font-size:0.92em;color:#0000ff;font-weight:600;">
+              <option value="0">0%</option>
+              <option value="5">5%</option>
+              <option value="8" selected>8%</option>
+              <option value="10">10%</option>
+            </select>
+          </span>
+          <span class="value" id="vatAmount">0</span>
+        </div>
+      </div>
+      <div class="total-final">
+        <span class="label">TỔNG CỘNG (ĐÃ BAO GỒM VAT):</span>
+        <span class="value" id="grandTotal">0</span>
+      </div>
+      <div class="total-words" id="totalWords"></div>
+    </div>
+  </div>
+
+  <!-- Ghi chú -->
+  <div class="section">
+    <div class="section-header header-note">Ghi chú</div>
+    <div class="section-body">
+      <div class="note-text no-print">
+        <textarea id="noteArea">- Bảng chào giá có hiệu lực trong vòng 20 ngày kể từ ngày chào giá.
+- Điều khoản thanh toán:
+  + Thanh toán ngay
+  + Chủ tài khoản: Công ty cổ phần phát triển công nghệ Minh Đạt - Số TK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội</textarea>
+      </div>
+      <div class="note-text print-only" id="notePrint" style="display:none; white-space:pre-line;"></div>
+    </div>
+  </div>
+
+  <!-- Ký tên (chỉ hiện khi in) -->
+  <div class="section" id="signSection" style="display:none;">
+    <div class="section-body" style="padding:30px 20px;">
+      <div style="display:flex;justify-content:space-between;text-align:center;">
+        <div style="flex:1;">
+          <strong>KHÁCH HÀNG</strong><br>
+          <em style="font-size:0.85em;color:#666;">(Ký, ghi rõ họ tên)</em>
+        </div>
+        <div style="flex:1;">
+          <strong>NGƯỜI BÁO GIÁ</strong><br>
+          <em style="font-size:0.85em;color:#666;">(Ký, ghi rõ họ tên)</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="btn-group no-print">
+    <button class="btn btn-print" onclick="printQuote()">&#128424; In / Xuất PDF</button>
+    <button class="btn btn-excel" onclick="exportExcel()">&#128196; Xuất Excel</button>
+    <button class="btn btn-zalo" onclick="shareZalo()">&#128172; Gửi Zalo</button>
+    <button class="btn btn-reset" onclick="resetAll()">&#128260; Làm mới</button>
+  </div>
+</div>
+
+<div class="btn-toast" id="toast"></div>
+
+<script>
+// Dữ liệu mẫu từ báo giá Vạn Đạt
+const sampleData = [
+  { name: 'Cung cấp và lắp đặt Đầu ghi hình kỹ thuật số NVR IP 32 kênh DS-7732NI-M4 (Hikvision)', dvt: 'Cái', qty: 3, price: 10300000 },
+  { name: 'Cung cấp và lắp đặt Camera bán cầu cố định DS-2CD1121G0-I (Hikvision)', dvt: 'Cái', qty: 49, price: 520000 },
+  { name: 'Cung cấp và lắp đặt Camera chữ nhật cố định DS-2CD1T21G2-LIU (Hikvision)', dvt: 'Cái', qty: 13, price: 730000 },
+  { name: 'Cung cấp và lắp đặt Camera chữ nhật cố định có vỏ chống nước DS-2CD1T21G2-LIU (Hikvision)', dvt: 'Cái', qty: 11, price: 730000 },
+  { name: 'Cung cấp và lắp đặt Camera chuyên dụng lắp trong thang máy DS-2CD1121G0-I (Hikvision)', dvt: 'Cái', qty: 3, price: 520000 },
+  { name: 'Cung cấp và lắp đặt Bộ thu phát mạng wifi trong thang máy DS-5WF200CT-2N/tương đương (Hikvision)', dvt: 'Bộ', qty: 3, price: 0 },
+];
+
+let rowCount = 0;
+
+function formatNumber(n) {
+  return n.toLocaleString('vi-VN');
+}
+
+function parseNumber(s) {
+  return parseInt(String(s).replace(/[^0-9]/g, '')) || 0;
+}
+
+function addRow(data) {
+  rowCount++;
+  const tbody = document.getElementById('quoteBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="col-stt">${rowCount}</td>
+    <td class="col-name"><input type="text" value="${data ? data.name : ''}" oninput="saveState()"></td>
+    <td class="col-dvt"><input type="text" value="${data ? data.dvt : 'Cái'}" oninput="saveState()"></td>
+    <td class="col-qty"><input type="number" value="${data ? data.qty : 1}" min="0" oninput="calculate()"></td>
+    <td class="col-price"><input type="text" value="${data ? formatNumber(data.price) : '0'}" oninput="onPriceInput(this)" onfocus="onPriceFocus(this)" onblur="onPriceBlur(this)"></td>
+    <td class="col-total">0</td>
+    <td class="col-action no-print"><button class="btn-del" onclick="delRow(this)">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  calculate();
+}
+
+function delRow(btn) {
+  btn.closest('tr').remove();
+  reindex();
+  calculate();
+}
+
+function reindex() {
+  const rows = document.querySelectorAll('#quoteBody tr');
+  rows.forEach((tr, i) => { tr.querySelector('.col-stt').textContent = i + 1; });
+  rowCount = rows.length;
+}
+
+function onPriceInput(input) {
+  const raw = parseNumber(input.value);
+  const pos = input.selectionStart;
+  input.value = formatNumber(raw);
+  calculate();
+}
+function onPriceFocus(input) {
+  const raw = parseNumber(input.value);
+  input.value = raw === 0 ? '' : raw;
+}
+function onPriceBlur(input) {
+  const raw = parseNumber(input.value);
+  input.value = formatNumber(raw);
+  saveState();
+}
+
+function calculate() {
+  let subtotal = 0;
+  const rows = document.querySelectorAll('#quoteBody tr');
+  rows.forEach(tr => {
+    const qty = parseInt(tr.querySelector('.col-qty input').value) || 0;
+    const price = parseNumber(tr.querySelector('.col-price input').value);
+    const total = qty * price;
+    tr.querySelector('.col-total').textContent = formatNumber(total);
+    subtotal += total;
+  });
+  const vatRate = parseInt(document.getElementById('vatRate').value);
+  const vatAmount = Math.round(subtotal * vatRate / 100);
+  const grandTotal = subtotal + vatAmount;
+
+  document.getElementById('subtotal').textContent = formatNumber(subtotal) + ' đ';
+  document.getElementById('vatAmount').textContent = formatNumber(vatAmount) + ' đ';
+  document.getElementById('grandTotal').textContent = formatNumber(grandTotal) + ' đ';
+  document.getElementById('totalWords').textContent = 'Số tiền bằng chữ: ' + numberToVietnamese(grandTotal);
+  saveState();
+}
+
+// Đọc số thành chữ tiếng Việt
+function numberToVietnamese(n) {
+  if (n === 0) return 'Không đồng';
+  const ones = ['', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+  const units = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
+
+  function readThree(num) {
+    let h = Math.floor(num / 100);
+    let t = Math.floor((num % 100) / 10);
+    let o = num % 10;
+    let s = '';
+    if (h > 0) s += ones[h] + ' trăm ';
+    if (t > 1) { s += ones[t] + ' mươi '; }
+    else if (t === 1) { s += 'mười '; }
+    else if (t === 0 && h > 0 && o > 0) { s += 'lẻ '; }
+
+    if (o === 5 && t >= 1) s += 'lăm';
+    else if (o === 1 && t > 1) s += 'mốt';
+    else if (o > 0) s += ones[o];
+    return s.trim();
+  }
+
+  let chunks = [];
+  while (n > 0) { chunks.push(n % 1000); n = Math.floor(n / 1000); }
+
+  let parts = [];
+  for (let i = chunks.length - 1; i >= 0; i--) {
+    if (chunks[i] > 0) {
+      parts.push(readThree(chunks[i]) + ' ' + units[i]);
+    }
+  }
+  let result = parts.join(' ').replace(/\s+/g, ' ').trim();
+  return result.charAt(0).toUpperCase() + result.slice(1) + ' đồng.';
+}
+
+// In báo giá
+function printQuote() {
+  document.getElementById('signSection').style.display = 'block';
+  document.getElementById('notePrint').style.display = 'block';
+  document.getElementById('notePrint').textContent = document.getElementById('noteArea').value;
+  window.print();
+  setTimeout(() => {
+    document.getElementById('signSection').style.display = 'none';
+    document.getElementById('notePrint').style.display = 'none';
+  }, 500);
+}
+
+// Xuất Excel
+function exportExcel() {
+  const rows = document.querySelectorAll('#quoteBody tr');
+  let csv = '\uFEFF"STT","Danh mục dịch vụ","ĐVT","Số lượng","Đơn giá (VNĐ)","Thành tiền (VNĐ)"\n';
+  rows.forEach((tr, i) => {
+    const name = tr.querySelector('.col-name input').value.replace(/"/g, '""');
+    const dvt = tr.querySelector('.col-dvt input').value;
+    const qty = tr.querySelector('.col-qty input').value;
+    const price = parseNumber(tr.querySelector('.col-price input').value);
+    const total = parseInt(qty) * price;
+    csv += `"${i+1}","${name}","${dvt}","${qty}","${price}","${total}"\n`;
+  });
+  const vatRate = parseInt(document.getElementById('vatRate').value);
+  csv += `\n"","","","","TỔNG CỘNG (VAT ${vatRate}%):","${document.getElementById('grandTotal').textContent}"`;
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  const customer = document.getElementById('customerName').value || 'khach-hang';
+  a.href = URL.createObjectURL(blob);
+  a.download = `Bao-gia-${customer.replace(/\s+/g,'-')}.csv`;
+  a.click();
+  showToast('Đã xuất file Excel!');
+}
+
+// Chia sẻ Zalo
+function shareZalo() {
+  const customer = document.getElementById('customerName').value || 'Quý khách';
+  const total = document.getElementById('grandTotal').textContent;
+  const rows = document.querySelectorAll('#quoteBody tr');
+  let items = [];
+  rows.forEach((tr, i) => {
+    const name = tr.querySelector('.col-name input').value;
+    const qty = tr.querySelector('.col-qty input').value;
+    const t = tr.querySelector('.col-total').textContent;
+    if (name) items.push(`${i+1}. ${name} x${qty} = ${t}`);
+  });
+  const msg = `BẢNG CHÀO GIÁ - MINH ĐẠT\nKính gửi: ${customer}\n\n${items.join('\n')}\n\nTỔNG CỘNG: ${total}\n\n${document.getElementById('noteArea').value}`;
+  navigator.clipboard.writeText(msg).then(() => showToast('Đã copy nội dung! Dán vào Zalo để gửi.'));
+}
+
+// Reset
+function resetAll() {
+  if (!confirm('Bạn có chắc muốn xóa tất cả và làm mới?')) return;
+  document.getElementById('customerName').value = '';
+  document.getElementById('customerAddress').value = '';
+  document.getElementById('contactPerson').value = '';
+  document.getElementById('contactPhone').value = '';
+  document.getElementById('quoteBody').innerHTML = '';
+  rowCount = 0;
+  addRow();
+  localStorage.removeItem('minhdat_quote');
+  calculate();
+  showToast('Đã làm mới báo giá!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+// Lưu trạng thái vào localStorage
+function saveState() {
+  const rows = document.querySelectorAll('#quoteBody tr');
+  const items = [];
+  rows.forEach(tr => {
+    items.push({
+      name: tr.querySelector('.col-name input').value,
+      dvt: tr.querySelector('.col-dvt input').value,
+      qty: parseInt(tr.querySelector('.col-qty input').value) || 0,
+      price: parseNumber(tr.querySelector('.col-price input').value)
+    });
+  });
+  const state = {
+    date: document.getElementById('quoteDate').value,
+    customer: document.getElementById('customerName').value,
+    address: document.getElementById('customerAddress').value,
+    contact: document.getElementById('contactPerson').value,
+    phone: document.getElementById('contactPhone').value,
+    vatRate: document.getElementById('vatRate').value,
+    note: document.getElementById('noteArea').value,
+    items
+  };
+  localStorage.setItem('minhdat_quote', JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('minhdat_quote');
+  if (saved) {
+    const s = JSON.parse(saved);
+    document.getElementById('quoteDate').value = s.date || '';
+    document.getElementById('customerName').value = s.customer || '';
+    document.getElementById('customerAddress').value = s.address || '';
+    document.getElementById('contactPerson').value = s.contact || '';
+    document.getElementById('contactPhone').value = s.phone || '';
+    document.getElementById('vatRate').value = s.vatRate || '8';
+    document.getElementById('noteArea').value = s.note || '';
+    if (s.items && s.items.length > 0) {
+      s.items.forEach(item => addRow(item));
+      return;
+    }
+  }
+  // Nếu không có dữ liệu lưu, load mẫu
+  loadSample();
+}
+
+function loadSample() {
+  document.getElementById('quoteDate').value = '2026-04-16';
+  document.getElementById('customerName').value = 'Công ty Vạn Đạt';
+  sampleData.forEach(d => addRow(d));
+}
+
+// Khởi tạo
+loadState();
+</script>
+</body>
+</html>
