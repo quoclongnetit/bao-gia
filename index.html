@@ -177,7 +177,7 @@
       <span id="subtotal" style="display:none;"></span>
       <span id="vatAmount" style="display:none;"></span>
       <div class="total-final">
-        <span class="label">TỔNG CỘNG:</span>
+        <span class="label">TỔNG CỘNG ĐÃ GỒM THUẾ VAT:</span>
         <span class="value" id="grandTotal">0</span>
       </div>
       <div class="total-words" id="totalWords"></div>
@@ -233,7 +233,7 @@
       <tbody id="pBody"></tbody>
       <tfoot>
         <tr class="row-total">
-          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG</td>
+          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG ĐÃ GỒM THUẾ VAT</td>
           <td class="t-total" id="pGrandTotal"></td>
         </tr>
       </tfoot>
@@ -386,7 +386,7 @@ function buildPrintPage() {
     tr.innerHTML = `<td class="t-stt">${item.stt}</td><td class="t-name">${item.name}</td><td class="t-dvt">${item.dvt}</td><td class="t-qty">${item.qty}</td><td class="t-price">${fmt(item.price)}</td><td class="t-total">${fmt(item.total)}</td>`;
     pBody.appendChild(tr);
   });
-  document.getElementById('pTotalLabel').textContent = 'TỔNG CỘNG';
+  document.getElementById('pTotalLabel').textContent = 'TỔNG CỘNG ĐÃ GỒM THUẾ VAT';
   document.getElementById('pGrandTotal').textContent = fmt(d.grand);
   document.getElementById('pWords').innerHTML = '<i>Số tiền bằng chữ: </i>' + numToVi(d.grand);
   // Ghi chú
@@ -466,7 +466,7 @@ function printQuote() {
 function shareZalo() {
   const d = getFormData();
   let items = d.items.map(i => `${i.stt}. ${i.name} x${i.qty} = ${fmt(i.total)}`).join('\n');
-  const msg = `BẢNG CHÀO GIÁ - MINH ĐẠT\nKính gửi: ${d.customer}\n\n${items}\n\nTỔNG CỘNG: ${fmt(d.grand)} đ\n\n${d.note}`;
+  const msg = `BẢNG CHÀO GIÁ - MINH ĐẠT\nKính gửi: ${d.customer}\n\n${items}\n\nTỔNG CỘNG ĐÃ GỒM THUẾ VAT: ${fmt(d.grand)} đ\n\n${d.note}`;
   navigator.clipboard.writeText(msg).then(() => showToast('Đã copy nội dung! Dán vào Zalo để gửi.'));
 }
 
