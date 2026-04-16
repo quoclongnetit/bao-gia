@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title> </title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
@@ -382,64 +384,66 @@ function buildPrintPage() {
 }
 function printQuote() {
   buildPrintPage();
-  // Dùng iframe about:blank để Safari iPhone không hiển thị URL/title khi in
-  const printContent = document.getElementById('printPage').outerHTML;
-  const printStyles = document.querySelector('style').textContent;
-  const iframe = document.createElement('iframe');
-  iframe.style.position = 'fixed';
-  iframe.style.top = '-9999px';
-  iframe.style.left = '-9999px';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  document.body.appendChild(iframe);
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title> </title><style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Times New Roman', Times, serif; color: #000; padding: 0; margin: 0; }
-    @page { size: A4; margin: 15mm; }
-    .print-page { display: block; font-family: 'Times New Roman', Times, serif; color: #000; }
-    .print-page .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-    .print-page .p-header-left { flex: 1; }
-    .print-page .p-company { font-size: 11.5pt; font-weight: bold; margin-top: 4px; white-space: nowrap; }
-    .print-page .p-addr { font-size: 10pt; font-style: italic; margin-top: 3px; }
-    .print-page .p-mst { font-size: 10pt; margin-top: 2px; }
-    .print-page .p-logo-img { height: 50px; }
-    .print-page .p-title { text-align: center; font-size: 18pt; font-weight: bold; margin: 12px 0 2px; }
-    .print-page .p-date { text-align: center; font-size: 11pt; margin-bottom: 8px; }
-    .print-page .p-customer { font-size: 11pt; font-weight: bold; margin-bottom: 6px; }
-    .print-page table.p-table { width: 100%; border-collapse: collapse; font-size: 11pt; }
-    .print-page table.p-table th, .print-page table.p-table td { border: 1px solid #000; padding: 5px 8px; }
-    .print-page table.p-table thead th { background: #d6e4d6; font-weight: bold; text-align: center; vertical-align: middle; }
-    .print-page .t-stt { width: 30px; text-align: center; }
-    .print-page .t-dvt { width: 50px; text-align: center; }
-    .print-page .t-qty { width: 60px; text-align: center; }
-    .print-page .t-price { width: 100px; text-align: right; }
-    .print-page .t-total { width: 120px; text-align: right; }
-    .print-page .row-total td { font-weight: bold; }
-    .print-page .p-words { font-size: 11pt; font-weight: bold; margin-top: 4px; font-style: italic; }
-    .print-page .p-note { font-size: 10pt; margin-top: 10px; line-height: 1.7; }
-    .print-page .p-note b { font-size: 11pt; }
-    .print-page .p-note .note-line { margin-left: 0; }
-    .print-page .p-note .note-indent { margin-left: 16px; }
-    .print-page .p-sign { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; font-size: 11pt; }
-    .print-page .p-sign-col { width: 45%; }
-    .print-page .p-sign-title { font-weight: bold; }
-    .print-page .p-sign-sub { font-style: italic; font-size: 10pt; color: #555; }
-  </style></head><body>${printContent}</body></html>`);
-  doc.close();
-  // Đợi logo tải xong rồi in
-  const logoImg = doc.querySelector('.p-logo-img');
-  function doPrint() {
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-    setTimeout(() => document.body.removeChild(iframe), 1000);
+  // Hiện print-page để chụp
+  const el = document.getElementById('printPage');
+  el.style.display = 'block';
+  el.style.width = '794px'; // A4 width in px at 96dpi
+  el.style.padding = '40px';
+  el.style.background = '#fff';
+  el.style.position = 'fixed';
+  el.style.top = '0';
+  el.style.left = '-9999px';
+
+  showToast('Đang tạo PDF...');
+
+  // Đợi logo tải xong
+  const logo = el.querySelector('.p-logo-img');
+  function doCapture() {
+    html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: 794,
+      windowWidth: 794
+    }).then(canvas => {
+      el.style.display = 'none';
+      el.style.position = '';
+      el.style.top = '';
+      el.style.left = '';
+      el.style.width = '';
+      el.style.padding = '';
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageW = 210;
+      const pageH = 297;
+      const margin = 15;
+      const contentW = pageW - margin * 2;
+      const imgW = canvas.width;
+      const imgH = canvas.height;
+      const ratio = contentW / (imgW / 2); // scale=2
+      const contentH = (imgH / 2) * ratio;
+
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, contentH);
+
+      // Tạo tên file
+      const customer = document.getElementById('customerName').value || 'Bao-gia';
+      const fileName = 'Bao_gia_' + customer.replace(/\s+/g, '_') + '.pdf';
+      pdf.save(fileName);
+      showToast('Đã tạo PDF: ' + fileName);
+    }).catch(err => {
+      el.style.display = 'none';
+      el.style.position = '';
+      showToast('Lỗi tạo PDF!');
+      console.error(err);
+    });
   }
-  if (logoImg && !logoImg.complete) {
-    logoImg.onload = doPrint;
-    logoImg.onerror = doPrint;
+
+  if (logo && !logo.complete) {
+    logo.onload = doCapture;
+    logo.onerror = doCapture;
   } else {
-    setTimeout(doPrint, 300);
+    setTimeout(doCapture, 200);
   }
 }
 
