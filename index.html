@@ -144,15 +144,7 @@
         <label>Địa chỉ:</label>
         <input type="text" id="customerAddress" placeholder="">
       </div>
-      <div class="input-group">
-        <label>Thuế VAT:</label>
-        <select id="vatRate" onchange="calculate()">
-          <option value="0">0%</option>
-          <option value="5">5%</option>
-          <option value="8" selected>8%</option>
-          <option value="10">10%</option>
-        </select>
-      </div>
+      <input type="hidden" id="vatRate" value="0">
     </div>
   </div>
 
@@ -182,10 +174,8 @@
   <div class="edit-panel">
     <div class="edit-header" style="background:#ffd966;">Tổng cộng</div>
     <div class="edit-body">
-      <div class="total-section">
-        <div class="total-row"><span>Tổng cộng trước thuế:</span><span class="value" id="subtotal">0</span></div>
-        <div class="total-row"><span>Thuế VAT:</span><span class="value" id="vatAmount">0</span></div>
-      </div>
+      <span id="subtotal" style="display:none;"></span>
+      <span id="vatAmount" style="display:none;"></span>
       <div class="total-final">
         <span class="label">TỔNG CỘNG (ĐÃ BAO GỒM VAT):</span>
         <span class="value" id="grandTotal">0</span>
@@ -243,7 +233,7 @@
       <tbody id="pBody"></tbody>
       <tfoot>
         <tr class="row-total">
-          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG ĐÃ BAO GỒM THUẾ VAT 8%</td>
+          <td colspan="5" style="text-align:center;" id="pTotalLabel">TỔNG CỘNG (ĐÃ BAO GỒM VAT)</td>
           <td class="t-total" id="pGrandTotal"></td>
         </tr>
       </tfoot>
@@ -402,7 +392,7 @@ function buildPrintPage() {
     tr.innerHTML = `<td class="t-stt">${item.stt}</td><td class="t-name">${item.name}</td><td class="t-dvt">${item.dvt}</td><td class="t-qty">${item.qty}</td><td class="t-price">${fmt(item.price)}</td><td class="t-total">${fmt(item.total)}</td>`;
     pBody.appendChild(tr);
   });
-  document.getElementById('pTotalLabel').textContent = `TỔNG CỘNG ĐÃ BAO GỒM THUẾ VAT ${d.vatRate}%`;
+  document.getElementById('pTotalLabel').textContent = 'TỔNG CỘNG (ĐÃ BAO GỒM VAT)';
   document.getElementById('pGrandTotal').textContent = fmt(d.grand);
   document.getElementById('pWords').innerHTML = '<i>Số tiền bằng chữ: </i>' + numToVi(d.grand);
   // Ghi chú
