@@ -67,12 +67,15 @@
   /* ===== PHẦN IN - GIỐNG MẪU PDF GỐC ===== */
   .print-page { display: none; font-family: 'Times New Roman', Times, serif; color: #000; }
 
-  .print-page .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .print-page .p-header { display: flex; align-items: flex-start; border-bottom: 3px solid #2e7d32; padding-bottom: 8px; margin-bottom: 10px; }
+  .print-page .p-logo-col { display: flex; flex-direction: column; align-items: center; margin-right: 15px; flex-shrink: 0; }
+  .print-page .p-logo-img { height: 45px; }
+  .print-page .p-logo-text { font-size: 7pt; color: #333; margin-top: 2px; letter-spacing: 1px; }
   .print-page .p-header-right { flex: 1; text-align: right; }
-  .print-page .p-company { font-size: 11.5pt; font-weight: bold; margin-top: 4px; white-space: nowrap; }
-  .print-page .p-addr { font-size: 10pt; font-style: italic; margin-top: 3px; }
-  .print-page .p-mst { font-size: 10pt; margin-top: 2px; }
-  .print-page .p-logo-img { height: 50px; margin-right: 15px; }
+  .print-page .p-company { font-size: 12pt; font-weight: bold; color: #000; }
+  .print-page .p-company-en { font-size: 10pt; font-weight: bold; color: #555; margin-top: 1px; }
+  .print-page .p-addr { font-size: 9.5pt; font-style: italic; margin-top: 3px; }
+  .print-page .p-detail { font-size: 9.5pt; margin-top: 2px; }
 
   .print-page .p-title { text-align: center; font-size: 18pt; font-weight: bold; margin: 12px 0 2px; }
   .print-page .p-date { text-align: center; font-size: 11pt; margin-bottom: 8px; }
@@ -205,11 +208,16 @@
   <!-- ========== PHẦN IN - GIỐNG HỆT MẪU PDF ========== -->
   <div class="print-page" id="printPage">
     <div class="p-header">
-      <img src="logo.png" class="p-logo-img" alt="Minh Đạt">
+      <div class="p-logo-col">
+        <img src="logo.png" class="p-logo-img" alt="Minh Đạt">
+        <div class="p-logo-text">MINH DAT.,JSC</div>
+      </div>
       <div class="p-header-right">
         <div class="p-company">CÔNG TY CỔ PHẦN PHÁT TRIỂN CÔNG NGHỆ MINH ĐẠT</div>
+        <div class="p-company-en">MINH DAT., JSC</div>
         <div class="p-addr">Địa chỉ: Tầng 2, Số 79B phố Vũ Ngọc Phan, Phường Láng, Thành phố Hà Nội, Việt Nam</div>
-        <div class="p-mst">MST: 0109938186</div>
+        <div class="p-detail">MST: 0109938186 &nbsp;|&nbsp; STK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội</div>
+        <div class="p-detail">Email: ketoanminhdat2022@gmail.com &nbsp;;&nbsp; ketoanminhdat2022@meinvoice.vn</div>
       </div>
     </div>
 
