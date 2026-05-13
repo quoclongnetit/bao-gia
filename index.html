@@ -195,7 +195,6 @@
 2. Thời gian giao hàng: Giao ngay đối với hàng có sẵn.
 3. Bảo hành: Theo tiêu chuẩn hãng và nhà phân phối.
 4. Phương thức thanh toán: Chuyển khoản ngân hàng.
-      STK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội
 5. Do diễn biến thị trường biến động, Báo giá có hiệu lực tại thời điểm phát hành, thay đổi sẽ được báo khi chốt đơn.</textarea>
       </div>
     </div>
@@ -531,7 +530,6 @@ const defaultNote = `1. Giá trên chưa bao gồm chi phí vận chuyển và l
 2. Thời gian giao hàng: Giao ngay đối với hàng có sẵn.
 3. Bảo hành: Theo tiêu chuẩn hãng và nhà phân phối.
 4. Phương thức thanh toán: Chuyển khoản ngân hàng.
-      STK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội
 5. Do diễn biến thị trường biến động, Báo giá có hiệu lực tại thời điểm phát hành, thay đổi sẽ được báo khi chốt đơn.`;
 
 function loadSample() {
@@ -543,9 +541,9 @@ function loadSample() {
 
 loadState();
 // Ép ghi chú mặc định mới (v2) - xóa flag để cập nhật 1 lần
-if (!localStorage.getItem('minhdat_note_v2')) {
+if (!localStorage.getItem('minhdat_note_v3')) {
   document.getElementById('noteArea').value = defaultNote;
-  localStorage.setItem('minhdat_note_v2', '1');
+  localStorage.setItem('minhdat_note_v3', '1');
   saveState();
 }
 </script>
