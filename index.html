@@ -481,14 +481,8 @@ function shareZalo() {
 
 function resetAll() {
   if (!confirm('Bạn có chắc muốn xóa tất cả và làm mới?')) return;
-  document.getElementById('quoteNumber').value = '';
-  document.getElementById('customerName').value = '';
-  document.getElementById('customerAddress').value = '';
-  document.getElementById('quoteBody').innerHTML = '';
-  rowCount = 0; addRow();
   localStorage.removeItem('minhdat_quote');
-  calculate();
-  showToast('Đã làm mới!');
+  location.reload();
 }
 
 function showToast(msg) {
