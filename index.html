@@ -94,7 +94,7 @@
   .print-page .row-total td { font-weight: bold; }
 
   .print-page .p-words { font-size: 11pt; font-weight: bold; margin-top: 4px; font-style: italic; }
-  .print-page .p-note { font-size: 10pt; margin-top: 10px; line-height: 1.7; }
+  .print-page .p-note { font-size: 10pt; margin-top: 10px; line-height: 1.4; }
   .print-page .p-note b { font-size: 11pt; }
   .print-page .p-note .note-line { margin-left: 0; }
   .print-page .p-note .note-indent { margin-left: 16px; }
@@ -191,10 +191,12 @@
     <div class="edit-header" style="background:#ffd966;">Ghi chú</div>
     <div class="edit-body">
       <div class="note-text">
-        <textarea id="noteArea">- Bảng chào giá có hiệu lực trong vòng 20 ngày kể từ ngày chào giá.
-- Điều khoản thanh toán:
-  + Thanh toán ngay
-  + Chủ tài khoản: Công ty cổ phần phát triển công nghệ Minh Đạt - Số TK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội</textarea>
+        <textarea id="noteArea">1. Giá trên chưa bao gồm chi phí vận chuyển và lắp đặt.
+2. Thời gian giao hàng: Giao ngay đối với hàng có sẵn.
+3. Bảo hành: Theo tiêu chuẩn hãng và nhà phân phối.
+4. Phương thức thanh toán: Chuyển khoản ngân hàng.
+      STK: 86861486 – Ngân hàng TMCP Á Châu – ACB Hà Nội
+5. Do diễn biến thị trường biến động, Báo giá có hiệu lực tại thời điểm phát hành, thay đổi sẽ được báo khi chốt đơn.</textarea>
       </div>
     </div>
   </div>
@@ -399,10 +401,9 @@ function buildPrintPage() {
   document.getElementById('pWords').innerHTML = '<i>Số tiền bằng chữ: </i>' + numToVi(d.grand);
   // Ghi chú
   const lines = d.note.split('\n');
-  let noteHtml = '<b>Ghi chú:</b>';
+  let noteHtml = '<b>GHI CHÚ:</b>';
   lines.forEach(line => {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('+')) noteHtml += `<div class="note-indent">${line}</div>`;
+    if (line.match(/^\s{2,}/)) noteHtml += `<div class="note-indent">${line.trim()}</div>`;
     else noteHtml += `<div class="note-line">${line}</div>`;
   });
   document.getElementById('pNote').innerHTML = noteHtml;
