@@ -542,10 +542,10 @@ function loadSample() {
 }
 
 loadState();
-// Luôn cập nhật ghi chú nếu vẫn còn nội dung cũ
-const currentNote = document.getElementById('noteArea').value;
-if (currentNote.includes('Bảng chào giá có hiệu lực trong vòng 20 ngày') || currentNote.includes('Điều khoản thanh toán')) {
+// Ép ghi chú mặc định mới (v2) - xóa flag để cập nhật 1 lần
+if (!localStorage.getItem('minhdat_note_v2')) {
   document.getElementById('noteArea').value = defaultNote;
+  localStorage.setItem('minhdat_note_v2', '1');
   saveState();
 }
 </script>
