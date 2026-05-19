@@ -454,10 +454,33 @@ function printQuote() {
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const margin = 15;
-      const contentW = 210 - margin * 2;
+      const pageW = 210;
+      const pageH = 297;
+      const contentW = pageW - margin * 2;
       const contentH = (canvas.height / canvas.width) * contentW;
+      const maxH = pageH - margin * 2;
 
-      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, contentH);
+      if (contentH <= maxH) {
+        // Vừa 1 trang
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, contentH);
+      } else {
+        // Chia nhiều trang
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const totalPages = Math.ceil(contentH / maxH);
+        for (let i = 0; i < totalPages; i++) {
+          if (i > 0) pdf.addPage();
+          const srcY = (i * maxH / contentH) * canvas.height;
+          const srcH = Math.min((maxH / contentH) * canvas.height, canvas.height - srcY);
+          const drawH = (srcH / canvas.height) * contentH;
+          // Tạo canvas con cho từng trang
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = srcH;
+          const ctx = pageCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+          pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, drawH);
+        }
+      }
 
       const customer = document.getElementById('customerName').value || 'Bao-gia';
       const qn = document.getElementById('quoteNumber').value;
