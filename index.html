@@ -511,32 +511,36 @@ function saveState() {
   }));
 }
 
-function loadState() {
-  const saved = localStorage.getItem('minhdat_quote');
-  if (saved) {
-    const s = JSON.parse(saved);
-    document.getElementById('quoteDate').value = s.date || '';
-    document.getElementById('quoteNumber').value = s.quoteNumber || '';
-    document.getElementById('customerName').value = s.customer || '';
-    document.getElementById('customerAddress').value = s.address || '';
-    document.getElementById('vatRate').value = s.vatRate || '8';
-    document.getElementById('noteArea').value = s.note || '';
-    if (s.items && s.items.length > 0) { s.items.forEach(i => addRow(i)); return; }
-  }
-  loadSample();
-}
-
 const defaultNote = `1. Giá trên chưa bao gồm chi phí vận chuyển và lắp đặt.
 2. Thời gian giao hàng: Giao ngay đối với hàng có sẵn.
 3. Bảo hành: Theo tiêu chuẩn hãng và nhà phân phối.
 4. Phương thức thanh toán: Chuyển khoản ngân hàng.
 5. Do diễn biến thị trường biến động, Báo giá có hiệu lực tại thời điểm phát hành, thay đổi sẽ được báo khi chốt đơn.`;
 
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
 function loadSample() {
-  document.getElementById('quoteDate').value = '2026-04-16';
+  document.getElementById('quoteDate').value = todayStr();
   document.getElementById('customerName').value = '';
   document.getElementById('noteArea').value = defaultNote;
-  sampleData.forEach(d => addRow(d));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('minhdat_quote');
+  if (saved) {
+    const s = JSON.parse(saved);
+    document.getElementById('quoteDate').value = s.date || todayStr();
+    document.getElementById('quoteNumber').value = s.quoteNumber || '';
+    document.getElementById('customerName').value = s.customer || '';
+    document.getElementById('customerAddress').value = s.address || '';
+    document.getElementById('vatRate').value = s.vatRate || '8';
+    document.getElementById('noteArea').value = s.note || defaultNote;
+    if (s.items && s.items.length > 0) { s.items.forEach(i => addRow(i)); return; }
+  }
+  loadSample();
 }
 
 loadState();
