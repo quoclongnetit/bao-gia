@@ -65,17 +65,17 @@
   .btn-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 28px; border-radius: 8px; font-size: 0.95em; z-index: 999; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
 
   /* ===== PHẦN IN - GIỐNG MẪU PDF GỐC ===== */
-  .print-page { display: none; font-family: 'Times New Roman', Times, serif; color: #000; }
+  .print-page { display: none; font-family: 'Times New Roman', Times, serif; color: #000; min-width: 794px; }
 
   .print-page .p-header { display: flex; align-items: flex-start; border-bottom: 3px solid #2e7d32; padding-bottom: 8px; margin-bottom: 10px; }
   .print-page .p-logo-col { display: flex; flex-direction: column; align-items: center; margin-right: 15px; flex-shrink: 0; }
   .print-page .p-logo-img { height: 45px; }
-  .print-page .p-logo-text { font-size: 7pt; color: #333; margin-top: 2px; letter-spacing: 1px; }
+  .print-page .p-logo-text { font-size: 7pt; color: #333; margin-top: 2px; letter-spacing: 1px; white-space: nowrap; }
   .print-page .p-header-right { flex: 1; text-align: right; }
-  .print-page .p-company { font-size: 12pt; font-weight: bold; color: #000; }
-  .print-page .p-company-en { font-size: 10pt; font-weight: bold; color: #555; margin-top: 1px; }
-  .print-page .p-addr { font-size: 9.5pt; font-style: italic; margin-top: 3px; }
-  .print-page .p-detail { font-size: 9.5pt; margin-top: 2px; }
+  .print-page .p-company { font-size: 11pt; font-weight: bold; color: #000; white-space: nowrap; }
+  .print-page .p-company-en { font-size: 9pt; font-weight: bold; color: #555; margin-top: 1px; white-space: nowrap; }
+  .print-page .p-addr { font-size: 8.5pt; font-style: italic; margin-top: 3px; white-space: nowrap; }
+  .print-page .p-detail { font-size: 8.5pt; margin-top: 2px; white-space: nowrap; }
 
   .print-page .p-title { text-align: center; font-size: 18pt; font-weight: bold; margin: 12px 0 2px; }
   .print-page .p-date { text-align: center; font-size: 11pt; margin-bottom: 8px; }
@@ -411,8 +411,14 @@ function printQuote() {
   buildPrintPage();
   const el = document.getElementById('printPage');
   // Hiện ở cuối trang để html2canvas render đúng
+  // Tạm mở rộng body để print-page không bị co lại trên mobile
+  const origBodyMinW = document.body.style.minWidth;
+  const origBodyOverflow = document.body.style.overflow;
+  document.body.style.minWidth = '820px';
+  document.body.style.overflow = 'hidden';
   el.style.display = 'block';
   el.style.width = '794px';
+  el.style.minWidth = '794px';
   el.style.padding = '40px';
   el.style.background = '#fff';
   el.style.position = 'absolute';
@@ -432,14 +438,17 @@ function printQuote() {
       scrollX: 0,
       scrollY: 0
     }).then(canvas => {
-      // Ẩn lại
+      // Ẩn lại và khôi phục body
       el.style.display = 'none';
       el.style.position = '';
       el.style.left = '';
       el.style.top = '';
       el.style.zIndex = '';
       el.style.width = '';
+      el.style.minWidth = '';
       el.style.padding = '';
+      document.body.style.minWidth = origBodyMinW || '';
+      document.body.style.overflow = origBodyOverflow || '';
 
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -457,6 +466,9 @@ function printQuote() {
     }).catch(err => {
       el.style.display = 'none';
       el.style.position = '';
+      el.style.minWidth = '';
+      document.body.style.minWidth = origBodyMinW || '';
+      document.body.style.overflow = origBodyOverflow || '';
       showToast('Lỗi tạo PDF!');
       console.error(err);
     });
