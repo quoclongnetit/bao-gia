@@ -414,12 +414,12 @@ function printQuote() {
   // Tạm mở rộng body để print-page không bị co lại trên mobile
   const origBodyMinW = document.body.style.minWidth;
   const origBodyOverflow = document.body.style.overflow;
-  document.body.style.minWidth = '820px';
+  document.body.style.minWidth = '1200px';
   document.body.style.overflow = 'hidden';
   el.style.display = 'block';
   el.style.width = '794px';
   el.style.minWidth = '794px';
-  el.style.padding = '40px';
+  el.style.padding = '25px';
   el.style.background = '#fff';
   el.style.position = 'absolute';
   el.style.left = '0';
@@ -435,7 +435,7 @@ function printQuote() {
       useCORS: true,
       backgroundColor: '#ffffff',
       width: 794,
-      windowWidth: 900,
+      windowWidth: 1200,
       scrollX: 0,
       scrollY: 0
     }).then(canvas => {
